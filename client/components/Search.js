@@ -1,5 +1,8 @@
 import React from "react";
 import loginSVG from "../log_in.svg";
+import * as actions from "../actions/actions";
+import * as selectors from "../reducers";
+import { Link } from "react-router";
 import {
   FormControl,
   FormGroup,
@@ -17,16 +20,13 @@ export default class Search extends React.Component {
     };
   }
 
-  componentDidMount() {
-    // params injected via react-router, dispatch injected via connect
-    const { dispatch, params } = this.props;
-    const { accessToken, refreshToken } = params;
-    dispatch(setTokens({ accessToken, refreshToken }));
-    dispatch(getMyInfo());
+
+  handleChange(event) {
+    this.setState({ value: event.target.value });
   }
 
-  handleChange(e) {
-    this.setState({ value: e.target.value });
+  handleSubmit(event) {
+    this.props.dispatch(actions.searchByArtistName(this.state.value));
   }
 
   render() {
@@ -34,10 +34,24 @@ export default class Search extends React.Component {
       <Form inline>
         <FormGroup controlId="formInlineName">
           <ControlLabel>Artist Name</ControlLabel>{" "}
-          <FormControl type="text" placeholder="Metallica" />
+          <FormControl
+            type="text"
+            value={this.state.value}
+            placeholder="Metallica"
+          />
         </FormGroup>{" "}
-        <Button type="submit">Send invitation</Button>
+        <Button type="submit">
+          <Link to={"/setlist/"} activeClassName="active">
+            Send invitation
+          </Link>
+        </Button>
       </Form>
     );
   }
+}
+
+function mapStateToProps(state) {
+  return {
+    setlists: selectors.searchByArtistName(state)
+  };
 }

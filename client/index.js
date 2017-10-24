@@ -9,17 +9,11 @@ import { createHistory } from "history";
 import reducer from "./reducers";
 import App from "./components/App";
 import Login from "./components/Login";
-import User from "./components/User";
 import Error from "./components/Error";
 import Search from "./components/Search";
-import SetlistsScreen from "./components/SetlistsScreen"
-// import { Unsplashed } from "react-unsplash-container"
+import SetlistsScreen from "./components/SetlistsScreen";
 
-// load our css. there probably is a better way to do this
-// but for now this is our move
-require("./style.less");
 
-// Sync dispatched route actions to the history
 const reduxRouterMiddleware = syncHistory(hashHistory);
 const createStoreWithMiddleware = applyMiddleware(thunk, reduxRouterMiddleware)(
   createStore
@@ -29,23 +23,23 @@ const store = createStoreWithMiddleware(reducer);
 class Root extends Component {
   render() {
     return (
-    
-        <Provider store={store}>
-          <Router history={hashHistory}>
-            <Route path="/" component={App}>
-              <IndexRoute component={Login} />
-              <Route
-                path="/user/:accessToken/:refreshToken"
-                component={SetlistsScreen}
-              />
-              <Route path="/error/:errorMsg" component={Error} />
-            </Route>
-          </Router>
-        </Provider>
+      <Provider store={store}>
+        <Router history={hashHistory}>
+          <Route path="/" component={App}>
+            <IndexRoute component={Login} />
+            <Route path="/user/:accessToken/:refreshToken" component={Search} />
+            <Route
+              path="/user/:accessToken/:refreshToken"
+              component={SetlistsScreen}
+            />
+            <Route path="/setlist" component={SetlistsScreen} />
+            <Route path="/error/:errorMsg" component={Error} />
+          </Route>
+        </Router>
+      </Provider>
     );
   }
 }
 
-// render town
 const rootElement = document.getElementById("root");
 render(<Root />, rootElement);

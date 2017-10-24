@@ -1,40 +1,23 @@
 import React, { Component } from "react";
 import { PanelGroup, Panel } from "react-bootstrap";
+import Songs from "./Songs";
 
-class Songs extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      songs: this.props.setlist
-    };
-  }
-
-
-  render() {
-    return this.props.songs.map((song, index) => {
-      return (
-        <ul>
-          <li key={index}>{song}</li>
-        </ul>
-      );
-    });
-  }
-}
-
-export default class ListView extends Component {
+export default class SetlistsPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
       activeKey: "1"
     };
+
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
   handleSelect(activeKey) {
     this.setState({ activeKey });
   }
 
-  render() {
-    const setlists = this.props.setlists.map(_setlist => {
+  getSetlists() {
+    return this.props.setlists.map(_setlist => {
       return (
         <PanelGroup
           activeKey={this.state.activeKey}
@@ -47,15 +30,14 @@ export default class ListView extends Component {
         </PanelGroup>
       );
     });
-
-    return <div>{setlists} </div>;
   }
 
-  renderRowById(rowId) {
+  render() {
     return (
-      <li key={rowId}>
-        {this.props.renderRow(_.get(this.props.rowsById, rowId))}
-      </li>
+      <div>
+        <div>{this.state.activeKey}</div>
+        {this.getSetlists()}{" "}
+      </div>
     );
   }
 }

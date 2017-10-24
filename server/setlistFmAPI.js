@@ -20,13 +20,13 @@ app.use((req, res, next) => {
 
 app.post('/setlist.fm/searchSetlists', (req, res) => {
 
-  console.log(req.body);
+  console.log(req.body.artistName);
   axios({
     method: 'get',
     url: 'http://api.setlist.fm/rest/0.1/search/setlists.json',
     params: {
       apikey: API_KEY,
-      artistName: 'Helloween',
+      artistName: req.body.artistName,
     },
     headers: {
       'Access-Control-Allow-Origin': '*',

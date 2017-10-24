@@ -8,6 +8,7 @@ export const SPOTIFY_ME_BEGIN = "SPOTIFY_ME_BEGIN";
 export const SPOTIFY_ME_SUCCESS = "SPOTIFY_ME_SUCCESS";
 export const SPOTIFY_ME_FAILURE = "SPOTIFY_ME_FAILURE";
 export const SETLISTS_FETCHED = "SETLISTS_FETCHED";
+export const SEARCH_VALUE = "SEARCH_VALUE";
 
 /** set the app's access and refresh tokens */
 export function setTokens({ accessToken, refreshToken }) {
@@ -32,36 +33,14 @@ export function getMyInfo() {
   };
 }
 
-const getDefaultSetlists = async artistName => {
-  let response;
-  try {
-    response = await axios({
-      method: "post",
-      url: "http://localhost:5001/setlist.fm/searchSetlists",
-      data: {
-        artistName
-      }
-    });
-  } catch (error) {
-    console.log(error);
-    response = error;
-  }
-
-  return response.data.setlists;
-};
-
-export function getSetlistsByArtistName(artistName) {
+const getSetlistsByArtistName = setListData => {
   return async (dispatch, getState) => {
     try {
-      
-      let setlists = [{}]
+      let setlists = [{}];
       let setlist = {};
       let songs = [];
-      let setlistData = await getDefaultSetlists(artistName);
-
 
       setlistData.setlist.forEach((setlistInfo, index) => {
-       
         setlists[index] = {};
         setlists[index].songs = [];
         setlists[index].title = [];
@@ -71,30 +50,51 @@ export function getSetlistsByArtistName(artistName) {
           " - ",
           setlistInfo["@eventDate"]
         );
-        
 
         if (!!setlistInfo.sets.set) {
           if (Array.isArray(setlistInfo.sets.set)) {
             setlistInfo.sets.set.forEach(setPart => {
-              setPart.song.forEach(song => {
-                setlists[index].songs.push(song["@name"])
-              });
+              if (Array.isArray(setPart.song))
+                setPart.song.forEach(song => {
+                  setlists[index].songs.push(song["@name"]);
+                });
+            });
+          } else if (Array.isArray(setlistInfo.sets.set.song)) {
+            setlistInfo.sets.set.song.forEach(song => {
+              setlists[index].songs.push(song["@name"]);
             });
           } else {
-            if (Array.isArray(setlistInfo.sets.set.song)) {
-              setlistInfo.sets.set.song.forEach(song => {
-                setlists[index].songs.push(song["@name"]);
-              });
-            } else {
-              setlists[index].songs.push(setlistInfo.sets.set.song["@name"])
-            }
+            setlists[index].songs.push(setlistInfo.sets.set.song["@name"]);
           }
-
-          // console.log(songs);
         } else {
-          setlists[index].songs.push("")
+          // console.log(songs);
+          setlists[index].songs.push("Not songs for this concert");
         }
       });
+    } catch (error) {
+      console.error(error);
+    }
+
+    return setlists;
+  };
+};
+
+export async function searchByArtistName(artistName) {
+  return async (dispatch, getState) => {
+    let response;
+
+    try {
+      response = await axios({
+        method: "post",
+        url: "http://localhost:5001/setlist.fm/searchSetlists",
+        data: {
+          artistName
+        }
+      });
+
+      const responseData = response.data;
+
+      const setlists = getSetlistsByArtistName(artistName);
 
       dispatch({ type: SETLISTS_FETCHED, setlists });
     } catch (error) {

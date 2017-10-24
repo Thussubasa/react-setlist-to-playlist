@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Grid, Row, Col, Panel, Jumbotron } from "react-bootstrap";
+import { Unsplashed } from 'react-unsplash-container'
 // import { Unsplashed } from "react-unsplash-container";
 /**
  * Main app component
@@ -11,27 +12,13 @@ export default class SpotifyLogin extends Component {
     // injected via react router
     const { children } = this.props;
     return (
-          <Grid>
-            <Row className="show-grid">
-              <Col xs={6} md={4} />
-              <Col xs={6} md={4}>
-                <Panel header="SetList To Playlist">{children} </Panel>
-              </Col>
-              <Col xsHidden md={4} />
-            </Row>
-          </Grid>
+      <Unsplashed keywords={["music", "concert"]}>
+        <Grid>
+          <Row className="show-grid">
+            <Panel header="SetList To Playlist">{children} </Panel>
+          </Row>
+        </Grid>
+      </Unsplashed>
     );
   }
-}
-
-{
-  /* <Grid>
-        <Row className="show-grid">
-          <Col xs={6} md={4} />
-          <Col xs={6} md={4}>
-            <Panel header="SetList To Playlist">Panel content</Panel>
-          </Col>
-          <Col xsHidden md={4} />
-        </Row>
-      </Grid> */
 }
